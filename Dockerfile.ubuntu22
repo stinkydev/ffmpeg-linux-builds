@@ -1,0 +1,92 @@
+FROM ubuntu:22.04
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+# Set working directory
+WORKDIR /build
+
+# Fix apt sources and update package database
+RUN sed -i 's/# deb-src/deb-src/' /etc/apt/sources.list && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/* && \
+    apt-get update -o Acquire::CompressionTypes::Order::=gz && \
+    apt-get install -y --no-install-recommends ca-certificates
+
+# Install essential build tools first
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    pkg-config \
+    cmake \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    yasm \
+    nasm \
+    git \
+    wget \
+    curl \
+    unzip \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install codec libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libass-dev \
+    libfreetype6-dev \
+    libgnutls28-dev \
+    libmp3lame-dev \
+    libopus-dev \
+    libtheora-dev \
+    libvorbis-dev \
+    libvpx-dev \
+    libwebp-dev \
+    libx264-dev \
+    libx265-dev \
+    libxvidcore-dev \
+    libfdk-aac-dev \
+    libopenjp2-7-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install additional multimedia and system libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    librtmp-dev \
+    libspeex-dev \
+    libtwolame-dev \
+    libwavpack-dev \
+    libxml2-dev \
+    libzmq3-dev \
+    libzvbi-dev \
+    libbz2-dev \
+    liblzma-dev \
+    zlib1g-dev \
+    libssl-dev \
+    libdrm-dev \
+    libva-dev \
+    libvdpau-dev \
+    dpkg-dev \
+    file \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy build scripts
+COPY scripts/ /build/scripts/
+COPY packaging/ /build/packaging/
+
+# Make scripts executable
+RUN chmod +x /build/scripts/*.sh
+
+# Set environment variables for build
+ENV DOCKER_BUILD=1
+ENV PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig"
+ENV LD_LIBRARY_PATH="/usr/local/lib:/usr/lib/x86_64-linux-gnu"
+ENV PATH="/usr/local/bin:$PATH"
+ENV CFLAGS="-O3 -march=x86-64 -mtune=generic -fPIC"
+ENV CXXFLAGS="-O3 -march=x86-64 -mtune=generic -fPIC"
+
+# Create build and dist directories
+RUN mkdir -p /build/build /build/dist
+
+# Default command
+CMD ["/build/scripts/build-ffmpeg.sh"]

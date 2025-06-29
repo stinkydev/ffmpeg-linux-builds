@@ -1,0 +1,39 @@
+# Build artifacts
+build/
+dist/
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+
+# Archive files
+*.tar.gz
+*.tar.bz2
+*.zip
+*.deb
+
+# Environment files
+build-env.sh
+
+# Backup files
+*-backup-*
+
+# Docker volumes
+.docker-volumes/
+
+# Test output
+test.mp4
+test.mkv
+output.*
