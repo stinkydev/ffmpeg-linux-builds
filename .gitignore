@@ -1,5 +1,7 @@
 # Build artifacts
 build/
+build-tmp/
+dist-tmp/
 dist/
 *.log
 
