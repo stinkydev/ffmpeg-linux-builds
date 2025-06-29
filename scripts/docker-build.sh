@@ -113,7 +113,7 @@ run_build() {
             --name "$CONTAINER_NAME" \
             -v "$BUILD_DIR:/build/build" \
             -v "$DIST_DIR:/build/dist" \
-            -e "THREADS=$(nproc)" \
+            -e "THREADS=4" \
             "$IMAGE_NAME"; then
             log "Build completed in Docker container"
             return 0
